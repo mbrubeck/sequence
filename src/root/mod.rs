@@ -10,27 +10,23 @@ use self::database::Database;
 use self::provider::Provider;
 use self::settings::Settings;
 
-pub struct Root<'a> {
-  application: Application<'a>,
+pub struct Root {
+  application: Application,
   daemon: Daemon,
-  database: Database,
-  provider: Provider<'a>,
   settings: Settings
 }
 
-impl<'a> Root<'a> {
-  pub fn new() -> Root<'a> {
+impl Root {
+  pub fn new() -> Root {
     let settings = Settings::new();
     let database = Database::new(&settings);
-    let provider = Provider::new(&database);
-    let application = Application::new(&provider);
+    let provider = Provider::new(database);
     let daemon = Daemon::new(&settings, &provider);
+    let application = Application::new(provider);
 
     Root {
       application: application,
       daemon: daemon,
-      database: database,
-      provider: provider,
       settings: settings
     }
   }
@@ -40,7 +36,7 @@ impl<'a> Root<'a> {
   }
 
   pub fn database(&self) -> &Database {
-    &self.database
+    &self.provider().database()
   }
 
   pub fn daemon(&self) -> &Daemon {
@@ -48,7 +44,7 @@ impl<'a> Root<'a> {
   }
 
   pub fn provider(&self) -> &Provider {
-    &self.provider
+    &self.application.provider()
   }
 
   pub fn settings(&self) -> &Settings {

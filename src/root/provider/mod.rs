@@ -1,13 +1,17 @@
 use super::database::Database;
 
-pub struct Provider<'a> {
-  database: &'a Database
+pub struct Provider {
+  database: Database
 }
 
-impl<'a> Provider<'a> {
-  pub fn new<'b>(database: &'b Database) -> Provider<'b> {
+impl Provider {
+  pub fn new(database: Database) -> Provider {
     Provider {
       database: database
     }
+  }
+
+  pub fn database(&self) -> &Database {
+      &self.database
   }
 }
